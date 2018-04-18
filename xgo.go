@@ -268,14 +268,25 @@ func compile(image string, config *ConfigFlags, flags *BuildFlags, folder string
 				}
 				// Folder needs explicit mounting due to docker symlink security
 				locals = append(locals, target)
-				mounts = append(mounts, filepath.Join("/ext-go", strconv.Itoa(len(locals)), "src", strings.TrimPrefix(path, sources)))
-				paths = append(paths, filepath.Join("/ext-go", strconv.Itoa(len(locals))))
+				temp_path := filepath.Join("/ext-go", strconv.Itoa(len(locals)), "src", strings.TrimPrefix(path, sources))
+				temp_path = strings.Replace(temp_path, string(filepath.Separator), "/", -1)
+				mounts = append(mounts, temp_path)
+
+				temp_path = filepath.Join("/ext-go", strconv.Itoa(len(locals)))
+				temp_path = strings.Replace(temp_path, string(filepath.Separator), "/", -1)
+				paths = append(paths, temp_path)
 				return nil
 			})
 			// Export the main mount point for this GOPATH entry
 			locals = append(locals, sources)
-			mounts = append(mounts, filepath.Join("/ext-go", strconv.Itoa(len(locals)), "src"))
-			paths = append(paths, filepath.Join("/ext-go", strconv.Itoa(len(locals))))
+
+			temp_path := filepath.Join("/ext-go", strconv.Itoa(len(locals)), "src")
+			temp_path = strings.Replace(temp_path, string(filepath.Separator), "/", -1)
+			mounts = append(mounts, temp_path)
+
+			temp_path = filepath.Join("/ext-go", strconv.Itoa(len(locals)))
+			temp_path = strings.Replace(temp_path, string(filepath.Separator), "/", -1)
+			paths = append(paths, temp_path)
 		}
 	}
 	// Assemble and run the cross compilation command
